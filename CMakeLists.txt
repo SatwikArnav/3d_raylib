@@ -1,0 +1,25 @@
+cmake_minimum_required(VERSION 3.16)
+project(vintage_house_raylib CXX)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+add_executable(vintage_house main.cpp)
+
+find_package(raylib QUIET)
+if (raylib_FOUND)
+  target_link_libraries(vintage_house PRIVATE raylib)
+else()
+  find_package(PkgConfig REQUIRED)
+  pkg_check_modules(RAYLIB REQUIRED raylib)
+  target_include_directories(vintage_house PRIVATE ${RAYLIB_INCLUDE_DIRS})
+  target_link_directories(vintage_house PRIVATE ${RAYLIB_LIBRARY_DIRS})
+  target_link_libraries(vintage_house PRIVATE ${RAYLIB_LIBRARIES})
+  target_compile_options(vintage_house PRIVATE ${RAYLIB_CFLAGS_OTHER})
+endif()
+
+if (APPLE)
+  target_link_libraries(vintage_house PRIVATE "-framework IOKit" "-framework Cocoa" "-framework OpenGL")
+elseif(UNIX)
+  target_link_libraries(vintage_house PRIVATE m pthread dl rt X11)
+endif()
